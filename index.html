@@ -9,36 +9,39 @@
 		var app=angular.module('myapp',[]);
 		app.controller('Main', function($scope,popupService) {
 			var defaultData = {
-				title:'My Title'
+				title:'My Title',
+				message:''
 			};
 			$scope.show = function(){
-				popupService.getPopup(defaultData);
+				popupService.alert(defaultData);
 			}
 			
 		});
 		app.factory("popupService",function($document, $compile, $rootScope, $templateCache, $http){
 		var body = $document.find('body');
 			return {
-				getPopup: function (data) {
+				alert: function (data) {
 					var scope = $rootScope.$new();
 					angular.extend(scope, data);
-					var alertPoup = angular.element([
+					scope.title = data.title ? data.title : 'Alert!!!';
+					scope.message = data.message ? data.message : 'No message';
+					var alertPopup = angular.element([
                         '<div class="modal" style="border: 1px solid gray; border-radius: 5px; width: 50%; position: absolute; left: 325px; top: 142px; min-height: 200px;">',
                         '<div class="win" style="padding: 2%; width: 96%;background-color: rebeccapurple;">',
                         '<a class="close" ng-click="close()" style="float: right; text-decoration: none; font-weight: bold; color: black; font-family: arial;">X</a>',
-                        '<div style="font-size: 20px; color: white; font-weight: bold; font-family: Tahoma;">Alert!!!</div>',
+                        '<div style="font-size: 20px; color: white; font-weight: bold; font-family: Tahoma;">{{title}}</div>',
                         '</div>',
-						'<div style="padding: 2%; text-align: center; background: lightcyan none repeat scroll 0% 0%; min-height: 70px;">You can not do this work becouse you are not Authrised You can not do this work becouse you are not AuthrisedYou can not do this work becouse you are not Authrised</div>',
+						'<div style="padding: 2%; text-align: center; background: lightcyan none repeat scroll 0% 0%; min-height: 70px;">{{message}}</div>',
 						'<div>',
 						'<div  style="border-radius: 5px; background: lightblue none repeat scroll 0% 0%; text-align: center; font-family: Arial; font-weight: bold; color: white; width: 20%; margin: 1% 40%; padding: 1% 0%;">Ok</div>',
 						'</div>',
                         '</div>'
                     ].join(''));
-                    body.append(alertPoup);					
-					$compile(alertPoup)(scope);
+					$compile(alertPopup)(scope);
+                    body.append(alertPopup);					
 					
 					scope.close = function () {
-						alertPoup.remove();
+						alertPopup.remove();
 						scope.$destroy();
 					};
 				}
