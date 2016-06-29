@@ -1,0 +1,54 @@
+<!DOCTYPE HTML>
+<html lang="en-US">
+<head>
+	<meta charset="UTF-8">
+	<title></title>
+	<script type="text/javascript" src="libs/jquery.min.js"></script>
+	<script type="text/javascript" src="libs/angular.min.js"></script>
+	<script type="text/javascript">
+		var app=angular.module('myapp',[]);
+		app.controller('Main', function($scope,popupService) {
+			var defaultData = {
+				title:'My Title'
+			};
+			$scope.show = function(){
+				popupService.getPopup(defaultData);
+			}
+			
+		});
+		app.factory("popupService",function($document, $compile, $rootScope, $templateCache, $http){
+		var body = $document.find('body');
+			return {
+				getPopup: function (data) {
+					var scope = $rootScope.$new();
+					angular.extend(scope, data);
+					var alertPoup = angular.element([
+                        '<div class="modal" style="border: 1px solid gray; border-radius: 5px; width: 50%; position: absolute; left: 325px; top: 142px; min-height: 200px;">',
+                        '<div class="win" style="padding: 2%; width: 96%;background-color: rebeccapurple;">',
+                        '<a class="close" ng-click="close()" style="float: right; text-decoration: none; font-weight: bold; color: black; font-family: arial;">X</a>',
+                        '<div style="font-size: 20px; color: white; font-weight: bold; font-family: Tahoma;">Alert!!!</div>',
+                        '</div>',
+						'<div style="padding: 2%; text-align: center; background: lightcyan none repeat scroll 0% 0%; min-height: 70px;">You can not do this work becouse you are not Authrised You can not do this work becouse you are not AuthrisedYou can not do this work becouse you are not Authrised</div>',
+						'<div>',
+						'<div  style="border-radius: 5px; background: lightblue none repeat scroll 0% 0%; text-align: center; font-family: Arial; font-weight: bold; color: white; width: 20%; margin: 1% 40%; padding: 1% 0%;">Ok</div>',
+						'</div>',
+                        '</div>'
+                    ].join(''));
+                    body.append(alertPoup);					
+					$compile(alertPoup)(scope);
+					
+					scope.close = function () {
+						alertPoup.remove();
+						scope.$destroy();
+					};
+				}
+			}
+		});
+	</script>
+</head>
+<body ng-app="myapp">
+	<div ng-controller="Main">
+		<a href="" ng-click="show()">Select a color</a>{{1+2}}
+	</div>
+</body>
+</html>

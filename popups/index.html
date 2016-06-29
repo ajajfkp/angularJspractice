@@ -1,0 +1,77 @@
+<!DOCTYPE HTML>
+<html lang="en-US">
+<head>
+	<meta charset="UTF-8">
+	<title></title>
+	<script type="text/javascript" src="../libs/jquery.min.js"></script>
+	<script type="text/javascript" src="../libs/angular.min.js"></script>
+	<script type="text/javascript" src="../libs/ui-bootstrap-tpls-1.3.3.min.js"></script>
+	<script type="text/javascript">
+		var app = angular.module("myApp",[]);
+			app.controller('popupCtrl', function($scope, popupService) {
+				var modalOptions = {
+					closeButtonText: 'Cancel',
+					actionButtonText: 'Delete Customer',
+					bodyText: 'Are you sure you want to delete this customer?'
+				};
+				
+				$scope.deleteCustomer = function (id) {
+					popupService.showPopup({}, modalOptions);
+				}
+			});
+
+			app.service('popupService', function () {
+				var modalDefaults = {
+					backdrop: true,
+					keyboard: true,
+					modalFade: true,
+					templateUrl: '/modal.html'
+				};
+
+				var modalOptions = {
+					closeButtonText: 'Close',
+					actionButtonText: 'OK',
+					headerText: 'Proceed?',
+					bodyText: 'Perform this action?'
+				};
+				
+				this.showPopup = function (customPopupDefaults, customPopupOptions) {
+					if (!customPopupDefaults) customPopupDefaults = {};
+					customPopupDefaults.backdrop = 'static';
+					return this.show(customPopupDefaults, customPopupOptions);
+				};
+				
+				this.show = function (customPopupDefaults, customPopupOptions) {
+					//Create temp objects to work with since we're in a singleton service
+					var tempPopupDefaults = {};
+					var tempPopupOptions = {};
+					if (!tempPopupDefaults.controller) {
+						tempPopupDefaults.controller = function ($scope, $modalInstance) {
+							$scope.modalOptions = tempPopupOptions;
+							$scope.modalOptions.ok = function (result) {
+								$modalInstance.close(result);
+							};
+							$scope.modalOptions.close = function (result) {
+								$modalInstance.dismiss('cancel');
+							};
+						}
+					}
+					return tempPopupDefaults;
+				}
+				
+				
+				
+			});
+	</script>
+	<style>
+	
+	</style>
+</head>
+<body ng-app="myApp">
+	<div ng-controller="popupCtrl">
+		<div class="modal-header" ng-click="deleteCustomer('12')">
+		 AAAAA
+		</div>
+	</div>
+</body>
+</html>
