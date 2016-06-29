@@ -7,24 +7,35 @@
 	<script type="text/javascript" src="libs/angular.min.js"></script>
 	<script type="text/javascript">
 		var app=angular.module('myapp',[]);
-		app.controller('Main', function($scope,popupService) {
+		app.controller('Main', function($scope,popupService,$rootScope) {
 			var defaultData = {
 				title:'My Title',
-				message:''
+				message:'',
+				paramsCb:['aijaz','ahmad'],
+				callbackFun:function(){
+					console.log(callbackFun);
+				},
+				paramsCan:['aijaz','ahmad'],
+				canFun:function(){
+					console.log(callbackFun);
+				}
 			};
 			$scope.show = function(){
-				popupService.alert(defaultData);
+				popupService.alerts(defaultData);
 			}
-			
+
+
 		});
-		app.factory("popupService",function($document, $compile, $rootScope, $templateCache, $http){
+		app.factory("popupService",function($document, $compile, $rootScope, $templateCache){
 		var body = $document.find('body');
 			return {
-				alert: function (data) {
+				alerts: function (data) {
 					var scope = $rootScope.$new();
 					angular.extend(scope, data);
 					scope.title = data.title ? data.title : 'Alert!!!';
 					scope.message = data.message ? data.message : 'No message';
+					scope.donefunction = data.callbackFun;
+					scope.canfunction = data.canFun;
 					var alertPopup = angular.element([
                         '<div class="modal" style="border: 1px solid gray; border-radius: 5px; width: 50%; position: absolute; left: 325px; top: 142px; min-height: 200px;">',
                         '<div class="win" style="padding: 2%; width: 96%;background-color: rebeccapurple;">',
@@ -33,7 +44,8 @@
                         '</div>',
 						'<div style="padding: 2%; text-align: center; background: lightcyan none repeat scroll 0% 0%; min-height: 70px;">{{message}}</div>',
 						'<div>',
-						'<div  style="border-radius: 5px; background: lightblue none repeat scroll 0% 0%; text-align: center; font-family: Arial; font-weight: bold; color: white; width: 20%; margin: 1% 40%; padding: 1% 0%;">Ok</div>',
+						'<div  style="border-radius: 5px; background: lightblue none repeat scroll 0% 0%; text-align: center; font-family: Arial; font-weight: bold; color: white; width: 20%; margin: 1% 40%; padding: 1% 0%;" ng-click="ok()">Ok</div>',
+						'<div  style="border-radius: 5px; background: lightblue none repeat scroll 0% 0%; text-align: center; font-family: Arial; font-weight: bold; color: white; width: 20%; margin: 1% 40%; padding: 1% 0%;" ng-click="cancle()">cancle</div>',
 						'</div>',
                         '</div>'
                     ].join(''));
@@ -44,6 +56,20 @@
 						alertPopup.remove();
 						scope.$destroy();
 					};
+					
+					scope.ok = function(){
+						scope.donefunction();
+					}
+					scope.cancle = function(){
+					if(typeof scope.canfunction == 'undefined' && typeof scope.canfunction== function){
+							scope.canfunction();
+						}else{
+							alertPopup.remove();
+							scope.$destroy();
+						}
+					}
+					
+					
 				}
 			}
 		});
