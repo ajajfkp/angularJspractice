@@ -5,73 +5,89 @@
 	<title></title>
 	<script type="text/javascript" src="../libs/jquery.min.js"></script>
 	<script type="text/javascript" src="../libs/angular.min.js"></script>
-	<script type="text/javascript" src="../libs/ui-bootstrap-tpls-1.3.3.min.js"></script>
 	<script type="text/javascript">
-		var app = angular.module("myApp",[]);
-			app.controller('popupCtrl', function($scope, popupService) {
-				var modalOptions = {
-					closeButtonText: 'Cancel',
-					actionButtonText: 'Delete Customer',
-					bodyText: 'Are you sure you want to delete this customer?'
-				};
-				
-				$scope.deleteCustomer = function (id) {
-					popupService.showPopup({}, modalOptions);
+		var app=angular.module('myapp',[]);
+		app.controller('Main', function($scope,popupService,$rootScope) {
+			var defaultData = {
+				title:'My Title',
+				message:'',
+				paramsCb:['aijaz','ahmad'],
+				callbackFun:function(){
+					console.log(this.paramsCb);
+				},
+				paramsCan:['aijaz','ahmad'],
+				canFun:function(){
+					console.log(this.paramsCan);
 				}
-			});
+			};
+			
+			$scope.show = function(){
+				popupService.alerts(defaultData);
+			}
 
-			app.service('popupService', function () {
-				var modalDefaults = {
-					backdrop: true,
-					keyboard: true,
-					modalFade: true,
-					templateUrl: '/modal.html'
-				};
 
-				var modalOptions = {
-					closeButtonText: 'Close',
-					actionButtonText: 'OK',
-					headerText: 'Proceed?',
-					bodyText: 'Perform this action?'
-				};
-				
-				this.showPopup = function (customPopupDefaults, customPopupOptions) {
-					if (!customPopupDefaults) customPopupDefaults = {};
-					customPopupDefaults.backdrop = 'static';
-					return this.show(customPopupDefaults, customPopupOptions);
-				};
-				
-				this.show = function (customPopupDefaults, customPopupOptions) {
-					//Create temp objects to work with since we're in a singleton service
-					var tempPopupDefaults = {};
-					var tempPopupOptions = {};
-					if (!tempPopupDefaults.controller) {
-						tempPopupDefaults.controller = function ($scope, $modalInstance) {
-							$scope.modalOptions = tempPopupOptions;
-							$scope.modalOptions.ok = function (result) {
-								$modalInstance.close(result);
-							};
-							$scope.modalOptions.close = function (result) {
-								$modalInstance.dismiss('cancel');
-							};
+		});
+		app.factory("popupService",function($document, $compile, $rootScope, $templateCache){
+		var body = $document.find('body');
+			return {
+				alerts: function (data) {
+					var scope = $rootScope.$new();
+					angular.extend(scope, data);
+					scope.title = data.title ? data.title : 'Alert!!!';
+					scope.message = data.message ? data.message : 'No message';
+					scope.closeButtonText = data.closeButtonText ? data.closeButtonText : 'Close';
+					scope.actionButtonText = data.actionButtonText ? data.actionButtonText : 'Ok';
+
+					scope.donefunction = data.callbackFun;
+					scope.canfunction = data.canFun;
+					var alertPopup = angular.element([
+                        '<div class="modal" style="border: 1px solid gray; border-radius: 5px; width: 50%; position: absolute; left: 26%; top: 142px; min-height: 200px;">',
+                        '<div class="win" style="padding: 2%; width: 96%;background-color: rebeccapurple;">',
+                        '<a class="close" ng-click="close()" style="float: right; text-decoration: none; font-weight: bold; color: black; font-family: arial;">X</a>',
+                        '<div style="font-size: 20px; color: white; font-weight: bold; font-family: Tahoma;">{{title}}</div>',
+                        '</div>',
+						'<div style="padding: 2%; text-align: center; background: lightcyan none repeat scroll 0% 0%; min-height: 70px;">{{message}}</div>',
+						'<div style="width: 100%;">',
+						'<div style="border-radius: 5px; background: lightblue none repeat scroll 0% 0%; text-align: center; font-family: Arial; font-weight: bold; color: white; float: left; padding: 1%; margin: 1%; width: 46%;" ng-click="ok()">{{actionButtonText}}</div>',
+						'<div style="border-radius: 5px; background: lightblue none repeat scroll 0% 0%; text-align: center; font-family: Arial; font-weight: bold; color: white; float: left; padding: 1%; margin: 1%; width: 46%;" ng-click="cancle()">{{closeButtonText}}</div>',
+						'</div>',
+                        '</div>'
+                    ].join(''));
+					$compile(alertPopup)(scope);
+                    body.append(alertPopup);					
+					
+					scope.close = function () {
+						alertPopup.remove();
+						scope.$destroy();
+					};
+					
+					scope.ok = function(){
+						if(scope.donefunction){
+							scope.donefunction();
+							alertPopup.remove();
+						}else{
+							alertPopup.remove();
 						}
 					}
-					return tempPopupDefaults;
+					scope.cancle = function(){
+					if(typeof scope.canfunction != 'undefined'){
+							scope.canfunction();
+							alertPopup.remove();
+						}else{
+							alertPopup.remove();
+							scope.$destroy();
+						}
+					}
+					
+					
 				}
-				
-				
-				
-			});
+			}
+		});
 	</script>
-	<style>
-	
-	</style>
 </head>
-<body ng-app="myApp">
-	<div ng-controller="popupCtrl">
-		<div class="modal-header" ng-click="deleteCustomer('12')">
-		 AAAAA
-		</div>
+<body ng-app="myapp">
+	<div ng-controller="Main">
+		<a href="" ng-click="show()">Select a color</a>{{1+2}}
 	</div>
 </body>
 </html>
