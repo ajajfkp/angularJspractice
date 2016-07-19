@@ -15,7 +15,7 @@
 				callbackFun:function(){
 					console.log(this.paramsCb);
 				},
-				paramsCan:['aijaz','ahmad'],
+				paramsCan:['can-aijaz','can-ahmad'],
 				canFun:function(){
 					console.log(this.paramsCan);
 				}
@@ -41,7 +41,7 @@
 					scope.donefunction = data.callbackFun;
 					scope.canfunction = data.canFun;
 					var alertPopup = angular.element([
-                        '<div class="modal" style="border: 1px solid gray; border-radius: 5px; width: 50%; position: absolute; left: 26%; top: 142px; min-height: 200px;">',
+                        '<div class="modal modal-header" style="border: 1px solid gray; border-radius: 5px; width: 50%; position: absolute; left: 26%; top: 142px; min-height: 200px;">',
                         '<div class="win" style="padding: 2%; width: 96%;background-color: rebeccapurple;">',
                         '<a class="close" ng-click="close()" style="float: right; text-decoration: none; font-weight: bold; color: black; font-family: arial;">X</a>',
                         '<div style="font-size: 20px; color: white; font-weight: bold; font-family: Tahoma;">{{title}}</div>',
